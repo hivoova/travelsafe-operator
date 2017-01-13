@@ -1,0 +1,102 @@
+<!--
+  Generated template for the ShowDetail page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <!--<ion-title class="title-header">
+        <b>J</b>ob <b>D</b>etail
+    </ion-title>-->
+    <ion-toolbar class="title-header">
+        <ion-buttons start hideWhen="android">
+            <button ion-button icon-only (click)="back({status:1 , title: 'Back'})">
+              <ion-icon name="arrow-back" class="font-color-icon"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons hideWhen="ios" class="android-start">
+            <button ion-button icon-only (click)="back({status:1 , title: 'Back'})">
+              <ion-icon name="arrow-back" class="font-color-icon"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <b>J</b>ob <b>D</b>etail
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+    <ion-grid [hidden]="!jobDetail">
+        <ion-row center class="justify-flex-start">
+            <ion-col class="width-flex-50">
+                <span class="font-color-secondary font-size-6-vw margin-left-10 font-weight-bold">
+                    Ref: {{paramsQuote}}
+                </span>
+            </ion-col>
+            <ion-col class="width-flex-50">
+                <button ion-button block class="bg-secondary" (click)="showHistory()">History</button>
+            </ion-col>
+        </ion-row>
+        <ion-col *ngFor="let groups of jobDetail ; let i = index" #itemBlock>
+            <ion-row center class="justify-flex-start bg-secondary font-color-text">
+                <ion-col>
+                    <span class="font-size-3-vw">Order: {{i+1}} </span>
+                </ion-col>
+                <ion-col>
+                    <span class="font-size-3-vw">Date Offer: {{groups[0].date}}</span>
+                </ion-col>
+            </ion-row>
+            <ion-col *ngFor="let group of groups" class="border-bottom-width-1 border-bottom-color-secondary">
+                <ion-row center class="justify-flex-start">
+                    <span class="font-size-4-vw">Movement:{{group.movement_order}}</span>
+                    <span class="icon-box font-size-4-vw margin-left-5">
+                      <ion-icon name="person"></ion-icon>
+                      <span>{{group.passenger}}</span>
+                    </span>
+                    <span class="margin-left-10 font-size-4-vw align-right">
+                      {{group.datetime_start}}
+                    </span>
+                </ion-row>
+                <ion-row center class="justify-flex-start">
+                    <span class="textOverflow">
+                      {{group.collection_address}}
+                    </span>
+                </ion-row>
+                <ion-row center class="justify-flex-start">
+                    <ion-icon ios="md-car" md="md-car" class="font-color-primary"></ion-icon>
+                </ion-row>
+                <ion-row center class="justify-flex-start">
+                    <span class="textOverflow">
+                      {{group.destination_address}}
+                    </span>
+                </ion-row>
+            </ion-col>
+            <form [formGroup]="bidForm[i]">
+                <ion-row center class="justify-flex-start padding-top-5 padding-bottom-5 border-bottom-width-1 border-bottom-color-secondary">
+                    <ion-col class="padding-0">
+                        <ion-input type="number" placeholder="Price" formControlName="price"></ion-input>
+                        <span *ngIf="!bidForm[i].controls['price'].valid && (bidForm[i].controls['price'].dirty || submitAttempt[i])" class="font-color-danger">
+                          Please input number only
+                        </span>
+                    </ion-col>
+                    <ion-col width-10 [hidden]="!this.settings.buy_it_now || buyNowPrice[i].price == 0">
+                        <span> Or </span>
+                    </ion-col>
+                    <ion-col class="padding-0" [hidden]="!this.settings.buy_it_now || buyNowPrice[i].price == 0">
+                        <button ion-button full class="bg-secondary" (click)="submit(groups[0].date , i , buyNowPrice[i].price)">Buy Now (${{buyNowPrice[i].price | round}})</button>
+                    </ion-col>
+                </ion-row>
+                <ion-row center class="justify-flex-start padding-top-5 margin-bottom-5 border-bottom-width-1 border-bottom-color-secondary">
+                    <ion-textarea rows="6" placeholder="Notes" formControlName="notes"></ion-textarea>
+                </ion-row>
+                <ion-row center class="justify-flex-start">
+                    <button ion-button class="bg-secondary width-50" (click)="submit(groups[0].date , i)">Bid</button>
+                    <button ion-button class="bg-danger width-50" (click)="reject(groups[0].date)">Reject</button>
+                </ion-row>
+            </form>
+        </ion-col>
+    </ion-grid>
+</ion-content>
+
+<!--(click)="submit(groups[0].date , i)"-->

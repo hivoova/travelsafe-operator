@@ -1,0 +1,46 @@
+<!--
+  Generated template for the BidHistory page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <ion-toolbar class="title-header">
+        <ion-buttons start hideWhen="android">
+            <button ion-button icon-only (click)="back()">
+              <ion-icon name="arrow-back" class="font-color-icon"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons hideWhen="ios" class="android-start">
+            <button ion-button icon-only (click)="back()">
+              <ion-icon name="arrow-back" class="font-color-icon"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <b>H</b>istory
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+    <ion-item-group *ngFor="let key of dateKeys; let i = index">
+        <ion-item-divider color="secondary">
+            <ion-row center class="justify-space-between">
+                <span class="font-size-4-vw">Order: {{i+1}}</span>
+                <span class="font-size-4-vw">Date offer: {{key}}</span>
+            </ion-row>
+        </ion-item-divider>
+        <div *ngFor="let data of chuckData">
+            <div *ngFor="let d of data">
+                <ion-item *ngIf="_moment(d.dateKey,'YYYY-MM-DD HH:mm:ss').isSame(key,'DD MMM YYYY HH:mm:ss')">
+                    <ion-row center>
+                        <ion-col><span class="font-size-4-vw">{{d.name}}</span></ion-col>
+                        <ion-col><span class="font-size-4-vw">({{_moment(d.date,'YYYY-MM-DD HH:mm:ss').format('DD MMM YYYY HH:mm')}})</span></ion-col>
+                        <ion-col><span class="font-size-4-vw">$ {{d.amount | round}}</span></ion-col>
+                    </ion-row>
+                </ion-item>
+            </div>
+        </div>
+    </ion-item-group>
+</ion-content>

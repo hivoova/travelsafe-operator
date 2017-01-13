@@ -1,0 +1,81 @@
+<!--
+  Generated template for the WaitAccept page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+<!--
+    <ion-title class="title-header">
+        <b>J</b>obs <b>T</b>o <b>A</b>ccept
+    </ion-title>-->
+    <ion-toolbar class="title-header-left">
+        <ion-buttons end hideWhen="android">
+            <button ion-button icon-only (click)="logout()">
+              <ion-icon name="log-out" class="font-color-icon"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons hideWhen="ios" end>
+            <button ion-button icon-only (click)="logout()">
+              <ion-icon name="log-out" class="font-color-icon"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <b>J</b>obs <b>T</b>o <b>A</b>ccept
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-item class="align-center" [hidden]="!lastUpdated">
+        <p>Last updated: {{lastUpdated}}</p>
+        <!--<span><ion-icon name="refresh" class="font-size-5-vw"></ion-icon></span>-->
+    </ion-item>
+    <ion-list>
+        <ion-item class="custom-item" *ngFor="let items of waitAcceptJob; let j = index">
+            <ion-grid class="font-size-4-vw">
+                <ion-row center class="justify-flex-start">
+                    <span class="font-color-secondary font-size-6-vw margin-left-10 font-weight-bold">
+                        Ref: {{items.quote_id}}
+                    </span>
+                    <span class="icon-box margin-left-5">
+                        <ion-icon name="person"></ion-icon>
+                        <span>{{items.passenger}}</span>
+                    </span>
+                </ion-row>
+                <ion-col class="border-bottom-width-1 border-bottom-color-secondary margin-bottom-5" *ngFor="let item of items.jobAssignDetail; let i = index" [hidden]="i !== 0 && !expandJob[j]">
+                    <ion-row center class="justify-space-between">
+                        <span class="font-size-4-vw">Movement Order: {{item.movementRoutes.movement_order}}</span>
+                        <span class="font-size-4-vw">{{_moment(item.movementRoutes.datetime_start, 'YYYY-MM-DD HH:mm:ss').format('DD MMM YYYY HH:mm')}}</span>
+                    </ion-row>
+                    <ion-row center class="justify-flex-start">
+                        <span class="textOverflow font-size-4-vw">
+                            {{item.movementRoutes.collection_address}}
+                        </span>
+                    </ion-row>
+                    <ion-row center class="justify-flex-start">
+                        <ion-icon ios="md-car" md="md-car" class="font-color-primary"></ion-icon>
+                    </ion-row>
+                    <ion-row center class="justify-flex-start">
+                        <span class="textOverflow font-size-4-vw">
+                            {{item.movementRoutes.destination_address}}
+                        </span>
+                    </ion-row>
+                    <input type="hidden" class="assignId_{{j}}" value="{{item.assign_id}}" />
+                </ion-col>
+                <ion-row center class="justify-center">
+                    <ion-col>
+                        <button ion-button block class="bg-secondary" (click)="accept(items.jobAssignDetail , j)">
+                            Accept ($ {{items.price | round}})
+                        </button>
+                    </ion-col>
+                    <ion-col>
+                        <button ion-button block class="bg-secondary" (click)="showMoreDetail(j)">
+                            {{expandJob[j] ? 'Hide Detail' : 'More Detail'}}
+                        </button>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </ion-list>
+</ion-content>

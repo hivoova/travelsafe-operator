@@ -1,0 +1,65 @@
+<!--
+  Generated template for the AvailableJob page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <!--
+    <ion-title class="title-header">
+        <b>A</b>vailable <b>J</b>obs
+    </ion-title>-->
+    <ion-toolbar class="title-header-left">
+        <ion-buttons end hideWhen="android">
+            <button ion-button icon-only (click)="logout()">
+              <ion-icon name="log-out" class="font-color-icon"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons hideWhen="ios" end>
+            <button ion-button icon-only (click)="logout()">
+              <ion-icon name="log-out" class="font-color-icon"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <b>A</b>vailable <b>J</b>obs
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+    <ion-item class="align-center" [hidden]="!lastUpdated">
+        <p>Last updated: {{lastUpdated}}</p>
+        <!--<span><ion-icon name="refresh" class="font-size-5-vw"></ion-icon></span>-->
+    </ion-item>
+    <ion-list>
+        <ion-item *ngFor="let item of jobAvailables; let i = index" (click)="showDetail(item.quote_id , i)" [ngClass]="{'bg-inActive': !item.active }">
+            <ion-grid class="font-size-4-vw">
+                <ion-row center class="justify-flex-start">
+                    <ion-col>
+                        <span class="font-color-secondary font-weight-bold">Ref: {{item.quote_id}}</span>
+                        <span class="icon-box margin-left-5">
+                          <ion-icon name="person"></ion-icon>
+                          <span>{{item.passenger}}</span>
+                        </span>
+                    </ion-col>
+                    <ion-col>
+                        <span class="align-right">
+                          {{_moment(item.date_out).format('DD MMM YYYY (HH:mm)')}}
+                        </span>
+                    </ion-col>
+                </ion-row>
+                <ion-row center class="justify-flex-start">
+                    <ion-col width-80 class="textOverflow">
+                        <span>{{item.col_address}}</span>
+                    </ion-col>
+                    <ion-col width-20 class="align-right font-color-icon">
+                        <span> 
+                          <ion-icon name="arrow-forward"></ion-icon>
+                        </span>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </ion-list>
+</ion-content>

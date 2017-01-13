@@ -1,0 +1,304 @@
+// http://ionicframework.com/docs/v2/theming/
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+// flex class 
+$justifyList: flex-start,
+flex-end,
+center,
+space-around,
+space-between;
+@each $item in $justifyList {
+    .justify-#{$item} {
+        justify-content: $item;
+    }
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+// end flex class
+
+/* General class */
+
+
+/* color */
+
+@mixin backgroundColor ($color) {
+    background-color: $color;
+}
+
+@mixin textColor ($color) {
+    color: $color;
+}
+
+@mixin square($width) {
+    width: $width;
+    height: $width;
+}
+
+@mixin boxColor($bgColor, $textColor) {
+    background-color: $bgColor;
+    color: $textColor;
+}
+
+$primary: #28B99A;
+$secondary: #006650;
+$danger: #ED1B24;
+$hover: #154000;
+$textColor: #fff;
+$greyColor: #ccc;
+$activeColor: #28B99A;
+$iconBgColor: #28B99A;
+$bgInActive: #D4F1EC;
+$colors: ( "primary": $primary, "secondary": $secondary, "danger": $danger, "grey": $greyColor, "active": $activeColor, "icon": $iconBgColor, "text": $textColor, "inActive":$bgInActive);
+@each $key,
+$color in $colors {
+    .bg-#{$key} {
+        @include backgroundColor($color);
+    }
+    .btn-#{$key} {
+        @include backgroundColor($color);
+        @include textColor($textColor);
+        &:hover,
+        &:focus {
+            @if $color==$secondary {
+                @include backgroundColor($hover)
+            }
+        }
+    }
+    .font-color-#{$key} {
+        @include textColor($color)
+    }
+    .border-color-#{$key} {
+        border-color: $color !important;
+    }
+    .border-top-color-#{$key} {
+        border-top-color: $color !important;
+    }
+    .border-bottom-color-#{$key} {
+        border-bottom-color: $color !important;
+    }
+    .border-right-color-#{$key} {
+        border-right-color: $color !important;
+    }
+    .border-left-color-#{$key} {
+        border-left-color: $color !important;
+    }
+}
+
+
+/* end color */
+
+@for $i from 0 through 100 {
+    // margin
+    .margin-#{$i} {
+        margin: $i + 0px;
+    }
+    .margin-top-#{$i} {
+        margin-top: $i + 0px;
+    }
+    .margin-bottom-#{$i} {
+        margin-bottom: $i + 0px;
+    }
+    .margin-left-#{$i} {
+        margin-left: $i + 0px;
+    }
+    .margin-right-#{$i} {
+        margin-right: $i + 0px;
+    }
+    // font
+    .font-size-#{$i}-px {
+        font-size: $i + 0px;
+    }
+    .font-size-#{$i}-rem {
+        font-size: $i + 0rem;
+    }
+    .font-size-#{$i}-em {
+        font-size: $i + 0em;
+    }
+    .font-size-#{$i}-vw {
+        font-size: $i + 0vw;
+    }
+    .font-size-#{$i}-vh {
+        font-size: $i + 0vh;
+    }
+    // padding 
+    .padding-#{$i} {
+        padding: $i + 0px;
+    }
+    .padding-top-#{$i} {
+        padding-top: $i + 0px;
+    }
+    .padding-bottom-#{$i} {
+        padding-bottom: $i + 0px;
+    }
+    .padding-left-#{$i} {
+        padding-left: $i + 0px;
+    }
+    .padding-right-#{$i} {
+        padding-right: $i + 0px;
+    }
+    // width
+    .width-#{$i} {
+        width: $i + 0%;
+    }
+    // border 
+    .border-width-#{$i} {
+        border: $i + 0px solid
+    }
+    .border-top-width-#{$i} {
+        border-top: $i + 0px solid
+    }
+    .border-bottom-width-#{$i} {
+        border-bottom: $i + 0px solid
+    }
+    .border-left-width-#{$i} {
+        border-left: $i + 0px solid
+    }
+    .border-right-width-#{$i} {
+        border-right: $i + 0px solid
+    }
+    //flex width
+    .width-flex-#{$i} {
+        flex: 0 0 $i + 0%;
+        max-width: $i + 0%;
+    }
+    .height-#{$i} {
+        height: $i + 0%;
+    }
+}
+
+$fontWeight: 100,
+200,
+300,
+400,
+500,
+600,
+700,
+bold;
+@each $item in $fontWeight {
+    .font-weight-#{$item} {
+        font-weight: $item;
+    }
+}
+
+
+/*custom ion-toolbar-backgroud */
+
+ion-toolbar.title-header>.toolbar-background {
+    background-size: 20% 50%;
+    background-repeat: no-repeat;
+    background-image: url('../assets/images/logo.png');
+    background-position: right 5% top 50%;
+}
+
+ion-toolbar.title-header-left>.toolbar-background {
+    background-size: 20% 50%;
+    background-repeat: no-repeat;
+    background-image: url('../assets/images/logo.png');
+    background-position: left 5% top 50%;
+}
+
+.toolbar-title-md {
+    text-align: center;
+    margin-left:10px;
+}
+
+.title-header {
+    background: #006650;
+    min-height: 10vh;
+    background-size: 20% 50%;
+    background-repeat: no-repeat;
+    background-image: url('../assets/images/logo.png');
+    background-position: left 5% top 50%;
+    text-align: center;
+    transition: background-position-x 1s ease;
+    &.right {
+        background-position: right 5% top 50%
+    }
+    .title {
+        color: #fff;
+        font-size: 1.5em;
+        .bold {
+            font-weight: bold
+        }
+    }
+}
+
+.icon-box {
+    padding: 5px;
+    @include boxColor($iconBgColor,
+    $textColor);
+}
+
+.custom-item {
+    .item-inner {
+        padding-right: 0px !important;
+        ion-label {
+            margin: 0px;
+        }
+    }
+}
+
+.android-start {
+    text-align: left;
+    position: absolute;
+}
+
+
+/*Text Align*/
+
+$alignItem: center,
+left,
+right;
+@each $item in $alignItem {
+    .align-#{$item} {
+        text-align: $item;
+    }
+}
+
+$direction: row,
+column;
+@each $item in $direction {
+    .flex-display-#{$item} {
+        display: flex;
+        flex-direction: $item;
+    }
+}
+
+
+/* end text align*/
+
+.textOverflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.tab-button[aria-selected="true"] {
+    background-color: $primary;
+}
+
+.loadingImg {
+    width: 4.7rem;
+    height: 4.7rem;
+}
+
+// .tab-button-text{
+//     font-size: 4vw !important;
+// }
+
+/* end general */
