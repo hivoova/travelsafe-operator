@@ -1,0 +1,80 @@
+<ion-header>
+
+    <ion-title class="title-header">
+        <b>J</b>ob <b>L</b>ist
+    </ion-title>
+
+</ion-header>
+
+<ion-content>
+    <ion-grid class="padding-0">
+        <ion-row center>
+            <ion-col class="padding-0">
+                <button ion-button block color="secondary" class="padding-0 margin-0">Available Jobs</button>
+            </ion-col>
+            <ion-col class="padding-0">
+                <button ion-button block class="padding-0 margin-0">More</button>
+            </ion-col>
+        </ion-row>
+        <ion-list>
+            <ion-item *ngFor="let item of availableJobs">
+                <ion-grid class="font-size-4-vw">
+                    <ion-row center class="justify-flex-start">
+                        <ion-col>
+                            <span class="font-color-secondary font-weight-bold">Ref: {{item.quote_id}}</span>
+                            <span class="icon-box margin-left-5">
+                          <ion-icon name="person"></ion-icon>
+                          <span>{{item.passenger}}</span>
+                            </span>
+                        </ion-col>
+                        <ion-col>
+                            <span class="align-right">
+                          {{_moment(item.date_out).format('DD MMM YYYY (HH:mm)')}}
+                        </span>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row center class="justify-flex-start">
+                        <ion-col width-80 class="textOverflow">
+                            <span>{{item.col_address}}</span>
+                        </ion-col>
+                        <ion-col width-20 class="align-right font-color-icon">
+                            <span> 
+                          <ion-icon name="arrow-forward"></ion-icon>
+                        </span>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+        </ion-list>
+        <ion-list>
+            <ion-item *ngFor="let item of availableJobs">
+                <ion-grid class="font-size-4-vw">
+                    <ion-row center class="justify-flex-start">
+                        <ion-col>
+                            <span class="font-color-secondary font-weight-bold">Ref: {{item.quote_id}}</span>
+                            <span class="icon-box margin-left-5">
+                          <ion-icon name="person"></ion-icon>
+                          <span>{{item.passenger}}</span>
+                            </span>
+                        </ion-col>
+                        <ion-col>
+                            <span class="align-right">
+                          {{_moment(item.date_out).format('DD MMM YYYY (HH:mm)')}}
+                        </span>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row center class="justify-flex-start">
+                        <ion-col width-80 class="textOverflow">
+                            <span>{{item.col_address}}</span>
+                        </ion-col>
+                        <ion-col width-20 class="align-right font-color-icon">
+                            <span> 
+                          <ion-icon name="arrow-forward"></ion-icon>
+                        </span>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
+        </ion-list>
+    </ion-grid>
+</ion-content>

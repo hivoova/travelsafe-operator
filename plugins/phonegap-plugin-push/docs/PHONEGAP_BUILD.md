@@ -7,8 +7,6 @@
 
 ## PhoneGap Build Support
 
-> Currently PhoneGap Build does not support version 1.9.0 of the plugin. Updates are being made to PGB to support the latest release.
-
 ### Including the plugin
 
 Including this plugin in a project that is built by PhoneGap Build is as easy as adding:
@@ -55,7 +53,7 @@ c. iOS Distribution cert: create (if needed), download and install (if needed), 
 d. Make an AdHoc Provisioning Profile using your App ID from (1a) and your cert from (1c).  Make sure your test device is enabled.  Download and save with a name you will recognize. (you'll need to add this to your Intel XDK project later)
 e. make a push cert, download it, install it, export it to .p12, convert it to .pem (this is for the push server that will send the notification - you'll need this later to test your Intel XDK app)
 
-2. In Intel XDK, make a new Cordova CLI 5.4.1 project using the HTML5+Cordova Blank Template, then replace the contents of www with [the contents of www from the PhoneGap Push Template](https://github.com/phonegap/phonegap-template-push/tree/master/template_src/www).
+2. In Intel XDK, make a new Cordova CLI 5.4.1 project using the HTML5+Cordova Blank Template, then replace the contents of www with [the contents of www from the PhoneGap Push Template](https://github.com/phonegap/phonegap-template-push/tree/master/www).
 
 3. Delete www/config.xml (optional? Intel XDK does not use config.xml)
 

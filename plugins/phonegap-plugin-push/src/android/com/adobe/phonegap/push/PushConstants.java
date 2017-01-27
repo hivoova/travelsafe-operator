@@ -39,8 +39,6 @@ public interface PushConstants {
     public static final String STYLE_TEXT = "text";
     public static final String BADGE = "badge";
     public static final String INITIALIZE = "init";
-    public static final String SUBSCRIBE = "subscribe";
-    public static final String UNSUBSCRIBE = "unsubscribe";
     public static final String UNREGISTER = "unregister";
     public static final String EXIT = "exit";
     public static final String FINISH = "finish";
@@ -62,11 +60,4 @@ public interface PushConstants {
     public static final String CLEAR_ALL_NOTIFICATIONS = "clearAllNotifications";
     public static final String VISIBILITY = "visibility";
     public static final String INLINE_REPLY = "inlineReply";
-    public static final String LOC_KEY = "locKey";
-    public static final String LOC_DATA = "locData";
-    public static final String TWILIO_BODY = "twi_body";
-    public static final String TWILIO_TITLE = "twi_title";
-    public static final String TWILIO_SOUND = "twi_sound";
-    public static final String START_IN_BACKGROUND = "cdvStartInBackground";
-    public static final String FORCE_START = "force-start";
 }

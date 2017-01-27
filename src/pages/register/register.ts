@@ -89,19 +89,21 @@ export class RegisterPage {
               // }).then((t: PushToken) => {
               //   this.socket = io.connect('http://'+SOCKET_LINK);
               //   this._storage.setToStorage('@device:token' , {token: t.token})
-              //   // alert('token:' + t.token)
+              //   alert('token:' + t.token)
               //   this.socket.emit('save-device' , {affiliate: resJson.result.affiliate , token: t.token , server:'AU'})
               //   this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
               //   this._loader.loaded()
               //   this.navCtrl.setRoot(ShowMoreJobPage)
               // });
+              
               this._storage.getFromStorage('@device:token') 
               .then(
                 res => {
-                  if(!res) {
+                  // console.log(res)
+                  if(res == null) {
                     this._push.register().then((t: PushToken) => {
-                      return this._push.saveToken(t);
-                    }).then((t: PushToken) => {
+                      // console.log(t)
+                      this._push.saveToken(t);
                       this.socket = io.connect('http://'+SOCKET_LINK);
                       this._storage.setToStorage('@device:token' , {token: t.token})
                       // alert('token:' + t.token)
@@ -109,14 +111,11 @@ export class RegisterPage {
                       this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
                       this._loader.loaded()
                       this.navCtrl.setRoot(ShowMoreJobPage)
-                    });
-                  }else{
-                    this._push.register().then((t: PushToken) => {
-                      this._push.saveToken(t);
-                      this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
-                      this._loader.loaded()
-                      this.navCtrl.setRoot(ShowMoreJobPage)
                     })
+                  }else{
+                    this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
+                    this._loader.loaded()
+                    this.navCtrl.setRoot(ShowMoreJobPage)
                   }
                 }
               )

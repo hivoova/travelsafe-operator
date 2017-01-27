@@ -63,13 +63,12 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
         Log.d(LOG_TAG, "onMessage - from: " + from);
 
         if (extras != null) {
-            Context applicationContext = getApplicationContext();
 
-            SharedPreferences prefs = applicationContext.getSharedPreferences(PushPlugin.COM_ADOBE_PHONEGAP_PUSH, Context.MODE_PRIVATE);
+            SharedPreferences prefs = getApplicationContext().getSharedPreferences(PushPlugin.COM_ADOBE_PHONEGAP_PUSH, Context.MODE_PRIVATE);
             boolean forceShow = prefs.getBoolean(FORCE_SHOW, false);
             boolean clearBadge = prefs.getBoolean(CLEAR_BADGE, false);
 
-            extras = normalizeExtras(applicationContext, extras);
+            extras = normalizeExtras(extras);
 
             if (clearBadge) {
                 PushPlugin.setApplicationIconBadgeNumber(getApplicationContext(), 0);
@@ -88,7 +87,7 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
                 extras.putBoolean(FOREGROUND, true);
                 extras.putBoolean(COLDSTART, false);
 
-                showNotificationIfPossible(applicationContext, extras);
+                showNotificationIfPossible(getApplicationContext(), extras);
             }
             // if we are not in the foreground always send notification if the data has at least a message or title
             else {
@@ -96,7 +95,7 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
                 extras.putBoolean(FOREGROUND, false);
                 extras.putBoolean(COLDSTART, PushPlugin.isActive());
 
-                showNotificationIfPossible(applicationContext, extras);
+                showNotificationIfPossible(getApplicationContext(), extras);
             }
         }
     }
@@ -104,12 +103,10 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
     /*
      * Change a values key in the extras bundle
      */
-    private void replaceKey(Context context, String oldKey, String newKey, Bundle extras, Bundle newExtras) {
+    private void replaceKey(String oldKey, String newKey, Bundle extras, Bundle newExtras) {
         Object value = extras.get(oldKey);
         if ( value != null ) {
             if (value instanceof String) {
-                value = localizeKey(context, newKey, (String) value);
-
                 newExtras.putString(newKey, (String) value);
             } else if (value instanceof Boolean) {
                 newExtras.putBoolean(newKey, (Boolean) value);
@@ -122,59 +119,14 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
     }
 
     /*
-     * Normalize localization for key
-     */
-    private String localizeKey(Context context, String key, String value) {
-        if (key.equals(TITLE) || key.equals(MESSAGE) || key.equals(SUMMARY_TEXT)) {
-            try {
-                JSONObject localeObject = new JSONObject(value);
-
-                String localeKey = localeObject.getString(LOC_KEY);
-
-                ArrayList<String> localeFormatData = new ArrayList<String>();
-                if (!localeObject.isNull(LOC_DATA)) {
-                    String localeData = localeObject.getString(LOC_DATA);
-                    JSONArray localeDataArray = new JSONArray(localeData);
-                    for (int i = 0 ; i < localeDataArray.length(); i++) {
-                        localeFormatData.add(localeDataArray.getString(i));
-                    }
-                }
-
-                String packageName = context.getPackageName();
-                Resources resources = context.getResources();
-
-                int resourceId = resources.getIdentifier(localeKey, "string", packageName);
-
-                if (resourceId != 0) {
-                    return resources.getString(resourceId, localeFormatData.toArray());
-                }
-                else {
-                    Log.d(LOG_TAG, "can't find resource for locale key = " + localeKey);
-
-                    return value;
-                }
-            }
-            catch(JSONException e) {
-                Log.d(LOG_TAG, "no locale found for key = " + key + ", error " + e.getMessage());
-
-                return value;
-            }
-        }
-
-        return value;
-    }
-
-    /*
      * Replace alternate keys with our canonical value
      */
     private String normalizeKey(String key) {
-        if (key.equals(BODY) || key.equals(ALERT) || key.equals(GCM_NOTIFICATION_BODY) || key.equals(TWILIO_BODY)) {
+        if (key.equals(BODY) || key.equals(ALERT) || key.equals(GCM_NOTIFICATION_BODY)) {
             return MESSAGE;
-        } else if (key.equals(TWILIO_TITLE)) {
-            return TITLE;
-        }else if (key.equals(MSGCNT) || key.equals(BADGE)) {
+        } else if (key.equals(MSGCNT) || key.equals(BADGE)) {
             return COUNT;
-        } else if (key.equals(SOUNDNAME) || key.equals(TWILIO_SOUND)) {
+        } else if (key.equals(SOUNDNAME)) {
             return SOUND;
         } else if (key.startsWith(GCM_NOTIFICATION)) {
             return key.substring(GCM_NOTIFICATION.length()+1, key.length());
@@ -191,7 +143,7 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
     /*
      * Parse bundle into normalized keys.
      */
-    private Bundle normalizeExtras(Context context, Bundle extras) {
+    private Bundle normalizeExtras(Bundle extras) {
         Log.d(LOG_TAG, "normalize extras");
         Iterator<String> it = extras.keySet().iterator();
         Bundle newExtras = new Bundle();
@@ -220,8 +172,6 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
 
                                 String value = data.getString(jsonKey);
                                 jsonKey = normalizeKey(jsonKey);
-                                value = localizeKey(context, jsonKey, value);
-
                                 newExtras.putString(jsonKey, value);
                             }
                         }
@@ -239,17 +189,14 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
                     String newKey = normalizeKey(notifkey);
                     Log.d(LOG_TAG, "replace key " + notifkey + " with " + newKey);
 
-                    String valueData = value.getString(notifkey);
-                    valueData = localizeKey(context, newKey, valueData);
-
-                    newExtras.putString(newKey, valueData);
+                    newExtras.putString(newKey, value.getString(notifkey));
                 }
                 continue;
             }
 
             String newKey = normalizeKey(key);
             Log.d(LOG_TAG, "replace key " + key + " with " + newKey);
-            replaceKey(context, key, newKey, extras, newExtras);
+            replaceKey(key, newKey, extras, newExtras);
 
         } // while
 
@@ -277,7 +224,6 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
         String message = extras.getString(MESSAGE);
         String title = extras.getString(TITLE);
         String contentAvailable = extras.getString(CONTENT_AVAILABLE);
-        String forceStart = extras.getString(FORCE_START);
         int badgeCount = extractBadgeCount(extras);
         if (badgeCount >= 0) {
             Log.d(LOG_TAG, "count =[" + badgeCount + "]");
@@ -287,30 +233,16 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
         Log.d(LOG_TAG, "message =[" + message + "]");
         Log.d(LOG_TAG, "title =[" + title + "]");
         Log.d(LOG_TAG, "contentAvailable =[" + contentAvailable + "]");
-        Log.d(LOG_TAG, "forceStart =[" + forceStart + "]");
 
         if ((message != null && message.length() != 0) ||
                 (title != null && title.length() != 0)) {
 
             Log.d(LOG_TAG, "create notification");
 
-            if(title == null || title.isEmpty()){
-                extras.putString(TITLE, getAppName(this));
-            }
-
             createNotification(context, extras);
         }
 
-		if(!PushPlugin.isActive() && "1".equals(forceStart)){
-            Log.d(LOG_TAG, "app is not running but we should start it and put in background");
-			Intent intent = new Intent(this, PushHandlerActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(PUSH_BUNDLE, extras);
-			intent.putExtra(START_IN_BACKGROUND, true);
-            intent.putExtra(FOREGROUND, false);
-            startActivity(intent);
-		} else if ("1".equals(contentAvailable)) {
-            Log.d(LOG_TAG, "app is not running and content available true");
+        if ("1".equals(contentAvailable)) {
             Log.d(LOG_TAG, "send notification event");
             PushPlugin.sendExtras(extras);
         }
@@ -447,10 +379,6 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
                 JSONArray actionsArray = new JSONArray(actions);
                 ArrayList<NotificationCompat.Action> wActions = new ArrayList<NotificationCompat.Action>();
                 for (int i=0; i < actionsArray.length(); i++) {
-                    int min = 1;
-                    int max = 2000000000;
-                    Random random = new Random();
-                    int uniquePendingIntentRequestCode = random.nextInt((max - min) + 1) + min;
                     Log.d(LOG_TAG, "adding action");
                     JSONObject action = actionsArray.getJSONObject(i);
                     Log.d(LOG_TAG, "adding callback = " + action.getString(CALLBACK));
@@ -471,20 +399,20 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
                         updateIntent(intent, action.getString(CALLBACK), extras, foreground, notId);
 
                         if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.M) {
-                            Log.d(LOG_TAG, "push activity for notId " + notId);
-                            pIntent = PendingIntent.getActivity(this, uniquePendingIntentRequestCode, intent, PendingIntent.FLAG_ONE_SHOT);
+                            Log.d(LOG_TAG, "push activity");
+                            pIntent = PendingIntent.getActivity(this, i, intent, PendingIntent.FLAG_ONE_SHOT);
                         } else {
-                            Log.d(LOG_TAG, "push receiver for notId " + notId);
-                            pIntent = PendingIntent.getBroadcast(this, uniquePendingIntentRequestCode, intent, PendingIntent.FLAG_ONE_SHOT);
+                            Log.d(LOG_TAG, "push receiver");
+                            pIntent = PendingIntent.getBroadcast(this, i, intent, PendingIntent.FLAG_ONE_SHOT);
                         }
                     } else if (foreground) {
                         intent = new Intent(this, PushHandlerActivity.class);
                         updateIntent(intent, action.getString(CALLBACK), extras, foreground, notId);
-                        pIntent = PendingIntent.getActivity(this, uniquePendingIntentRequestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        pIntent = PendingIntent.getActivity(this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     } else {
                         intent = new Intent(this, BackgroundActionButtonHandler.class);
                         updateIntent(intent, action.getString(CALLBACK), extras, foreground, notId);
-                        pIntent = PendingIntent.getBroadcast(this, uniquePendingIntentRequestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        pIntent = PendingIntent.getBroadcast(this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     }
 
                     NotificationCompat.Action.Builder actionBuilder =

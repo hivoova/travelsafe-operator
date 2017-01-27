@@ -35,21 +35,17 @@ var PushNotification = function(options) {
         if (result && typeof result.registrationId !== 'undefined') {
             that.emit('registration', result);
         } else if (result && result.additionalData && typeof result.additionalData.actionCallback !== 'undefined') {
-            var executeFuctionOrEmitEventByName = function(callbackName, context, arg) {
-              var namespaces = callbackName.split('.');
-              var func = namespaces.pop();
-              for (var i = 0; i < namespaces.length; i++) {
-                context = context[namespaces[i]];
-              }
-
-              if (typeof context[func] === 'function') {
-                context[func].call(context, arg);
-              } else {
-                that.emit(callbackName, arg);
-              }
+            var executeFunctionByName = function(functionName, context /*, args */) {
+                var args = Array.prototype.slice.call(arguments, 2);
+                var namespaces = functionName.split('.');
+                var func = namespaces.pop();
+                for (var i = 0; i < namespaces.length; i++) {
+                    context = context[namespaces[i]];
+                }
+                return context[func].apply(context, args);
             };
 
-            executeFuctionOrEmitEventByName(result.additionalData.actionCallback, window, result);
+            executeFunctionByName(result.additionalData.actionCallback, window, result);
         } else if (result) {
             that.emit('notification', result);
         }
@@ -97,52 +93,6 @@ PushNotification.prototype.unregister = function(successCallback, errorCallback,
     };
 
     exec(cleanHandlersAndPassThrough, errorCallback, 'PushNotification', 'unregister', [options]);
-};
-
-/**
- * subscribe to a topic
- * @param   {String}      topic               topic to subscribe
- * @param   {Function}    successCallback     success callback
- * @param   {Function}    errorCallback       error callback
- * @return  {void}
- */
-PushNotification.prototype.subscribe = function(topic, successCallback, errorCallback) {
-    if (!errorCallback) { errorCallback = function() {}; }
-
-    if (typeof errorCallback !== 'function')  {
-        console.log('PushNotification.subscribe failure: failure parameter not a function');
-        return;
-    }
-
-    if (typeof successCallback !== 'function') {
-        console.log('PushNotification.subscribe failure: success callback parameter must be a function');
-        return;
-    }
-
-    exec(successCallback, errorCallback, 'PushNotification', 'subscribe', [topic]);
-};
-
-/**
- * unsubscribe to a topic
- * @param   {String}      topic               topic to unsubscribe
- * @param   {Function}    successCallback     success callback
- * @param   {Function}    errorCallback       error callback
- * @return  {void}
- */
-PushNotification.prototype.unsubscribe = function(topic, successCallback, errorCallback) {
-    if (!errorCallback) { errorCallback = function() {}; }
-
-    if (typeof errorCallback !== 'function')  {
-        console.log('PushNotification.unsubscribe failure: failure parameter not a function');
-        return;
-    }
-
-    if (typeof successCallback !== 'function') {
-        console.log('PushNotification.unsubscribe failure: success callback parameter must be a function');
-        return;
-    }
-
-    exec(successCallback, errorCallback, 'PushNotification', 'unsubscribe', [topic]);
 };
 
 /**
@@ -209,7 +159,7 @@ PushNotification.prototype.clearAllNotifications = function(successCallback, err
 /**
  * Listen for an event.
  *
- * Any event is supported, but the following are built-in:
+ * The following events are supported:
  *
  *   - registration
  *   - notification
@@ -220,10 +170,9 @@ PushNotification.prototype.clearAllNotifications = function(successCallback, err
  */
 
 PushNotification.prototype.on = function(eventName, callback) {
-    if (!this._handlers.hasOwnProperty(eventName)) {
-        this._handlers[eventName] = [];
+    if (this._handlers.hasOwnProperty(eventName)) {
+        this._handlers[eventName].push(callback);
     }
-    this._handlers[eventName].push(callback);
 };
 
 /**

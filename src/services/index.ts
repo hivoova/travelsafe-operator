@@ -26,7 +26,7 @@ export class GlobalServices {
     ){}
 
 
-    register(registerRequest:RegisterRequest) : Promise<Object>{
+    register(registerRequest:RegisterRequest){
         return new Promise ((resolve , reject) => {
             this._user._register(registerRequest) 
             .subscribe(
@@ -43,7 +43,7 @@ export class GlobalServices {
         })
     }
 
-    tryToAuth(key:string , user:number) : Promise<Object>{
+    tryToAuth(key:string , user:number){
         return new Promise ((resolve , reject) => {
             this._user._tryToAuth(key , user) 
             .subscribe(
@@ -60,7 +60,7 @@ export class GlobalServices {
         })
     }
 
-    getAvailableJobs(key:string , user:number) : Promise<Object> {
+    getAvailableJobs(key:any , user:any){
         return new Promise ((resolve , reject) => {
             this._job._getAvailableJobs(key , user) 
             .subscribe(
@@ -77,7 +77,7 @@ export class GlobalServices {
         })
     }
 
-    getAvailableJobsNew(key:string , user:number , count: number) : Promise<Object> {
+    getAvailableJobsNew(key:string , user:number , count: number){
         return new Promise ((resolve , reject) => {
             this._job._getAvailableJobsNew(key , user , count) 
             .subscribe(

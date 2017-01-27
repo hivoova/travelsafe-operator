@@ -3,7 +3,6 @@
    - [Background Events](#push-message-arrives-with-app-in-background)
    - [Tap Events](#user-clicks-on-notification-in-notification-center)
 - [Android Behaviour](#android-behaviour)
-  - [Localization](#localization)
   - [Images](#images)
   - [Sound](#sound)
   - [Stacking](#stacking)
@@ -16,17 +15,14 @@
   - [Picture Messages](#picture-messages)
   - [Background Notifications](#background-notifications)
     - [Use of content-available: true](#use-of-content-available-true)
-  - [Huawei and Xiaomi Phones](#huawei-and-xiaomi-phones)
-  - [Application force closed](#application-force-closed)
   - [Visibility](#visibility-of-notifications)
   - [Badges](#badges)
-  - [Support for Twilio Notify](#support-for-twilio-notify)
 - [iOS Behaviour](#ios-behaviour)
   - [Sound](#sound-1)
   - [Background Notifications](#background-notifications-1)
   - [Action Buttons](#action-buttons-1)
     - [Action Buttons using GCM on iOS](#action-buttons-using-gcm-on-ios)
-  - [GCM and Additional Data](#gcm-and-additional-data)
+    - [Huawei and Xiaomi Phones](#huawei-and-xiaomi-phones)
 - [Windows Behaviour](#windows-behaviour)
   - [Notifications](#notifications)
   - [Setting Toast Capable Option for Windows](#setting-toast-capable-option-for-windows)
@@ -49,7 +45,7 @@ The following flowchart attempts to give you a picture of what happens when a pu
 
 - The push plugin receives the data from the remote push service and checks to see if there is a title or message in the data received. If there is then the message will be displayed in the devices notification center.
 - Then the push plugin checks to see if the app is running. If the user has killed the application then no further processing of the push data will occur.
-- If the app is running in the background the push plugin then checks to see if `content-available` exists in the push data.
+- If they app is running in the background the push plugin then checks to see if `content-available` exists in the push data.
 - If `content-available` is set to `1` then the plugin calls all of your `notification` event handlers.
 
 ## User clicks on notification in notification center
@@ -66,61 +62,6 @@ Some ways to handle this *double* event are:
 - include a unique ID in your push so you can check to see if you've already processed this event.
 
 # Android Behaviour
-
-## Localization
-
-Plugin supported localization from resources for: title, message and summaryText.
-
-You may use simple link to locale constant.
-
-```javascript
-{
-    "registration_ids": ["my device id"],
-    "data": {
-        "title": {"locKey": "push_app_title"},
-        "message": "Simple non-localizable text for message!"
-    }
-}
-```
-
-Or use localization with formatted constants.
-
-```javascript
-{
-    "registration_ids": ["my device id"],
-    "data": {
-        "title": {"locKey": "push_app_title"},
-        "message": {"locKey": "push_message_fox", "locData": ["fox", "dog"]}
-    }
-}
-```
-
-Here is an example using node-gcm that sends the above JSON:
-
-```javascript
-var gcm = require('node-gcm');
-// Replace these with your own values.
-var apiKey = "replace with API key";
-var deviceID = "my device id";
-var service = new gcm.Sender(apiKey);
-var message = new gcm.Message();
-message.addData('title', {"locKey": "push_app_title"});
-message.addData('message', 'Simple non-localizable text for message!');
-// Constant with formatted params
-// message.addData('message', {"locKey": "push_message_fox", "locData": ["fox", "dog"]});
-service.send(message, { registrationTokens: [ deviceID ] }, function (err, response) {
-    if(err) console.error(err);
-    else    console.log(response);
-});
-```
-
-Localization must store in strings.xml
-
-```xml
-<string name="push_app_title">@string/app_name</string>
-<string name="push_message_fox">The quick brown %1$s jumps over the lazy %2$s</string>
-<string name="push_summary_text">%%n%% new message(s)</string>
-```
 
 ## Images
 
@@ -483,7 +424,7 @@ service.send(message, { registrationTokens: [ deviceID ] }, function (err, respo
 });
 ```
 
-You will see both "Push number 1" and "Push number 2" in the shade.
+You will only see both "Push number 1" and "Push number 2" in the shade.
 
 ## Inbox Stacking
 
@@ -565,7 +506,7 @@ If you use `%n%` in the `summaryText` of the JSON coming down from GCM it will b
 
 ## Action Buttons
 
-Your notification can include a maximum of three action buttons. If you wish to include an icon along with the button name they must be placed in the `res/drawable` directory of your Android project. Then you can send the following JSON from GCM:
+Your notification can include action buttons. If you wish to include an icon along with the button name they must be placed in the `res/drawable` directory of your Android project. Then you can send the following JSON from GCM:
 
 ```javascript
 {
@@ -606,7 +547,7 @@ This will produce the following notification in your tray:
 
 ![action_combo](https://cloud.githubusercontent.com/assets/353180/9313435/02554d2a-44f1-11e5-8cd9-0aadd1e02b18.png)
 
-If your user clicks on the main body of the notification your app will be opened. However if they click on either of the action buttons the app will open (or start) and the specified JavaScript callback will be executed if there is a function defined, and if there isn't an event will be emitted with the callback name. In this case it is `app.emailGuests` and `app.snooze` respectively. If you set the `foreground` property to `true` the app will be brought to the front, if `foreground` is `false` then the callback is run without the app being brought to the foreground.
+If your users clicks on the main body of the notification your app will be opened. However if they click on either of the action buttons the app will open (or start) and the specified JavaScript callback will be executed. In this case it is `app.emailGuests` and `app.snooze` respectively. If you set the `foreground` property to `true` the app will be brought to the front, if `foreground` is `false` then the callback is run without the app being brought to the foreground.
 
 ### In Line Replies
 
@@ -649,7 +590,7 @@ service.send(message, { registrationTokens: [ deviceID ] }, function (err, respo
 });
 ```
 
-On Android N and greater when the user clicks on the Email Guests button they will see the following:
+On Android M and earlier the action buttons will work exactly the same as before but on Android N and greater when the user clicks on the Email Guests button you will see the following:
 
 ![inline_reply](https://cloud.githubusercontent.com/assets/353180/17107608/f35c208e-525d-11e6-94de-a3590c6f500d.png)
 
@@ -685,15 +626,13 @@ Then your app's `on('notification')` event handler will be called without the ap
 
 and the text data that the user typed would be located in `data.additionalData.inlineReply`.
 
-**Note:** On Android M and earlier the above in line behavior is not supported. As a fallback when `inline` is set to `true` the `foreground` setting will be changed to the default `true` setting. This allows your app to be launched from a closed state into the foreground where any behavior desired as a result of the user selecting the in line reply action button can be handled through the associated `callback`.
-
 #### Attributes
 
 Attribute | Type | Default | Description
 --------- | ---- | ------- | -----------
 `icon` | `string` | | Optional. The name of a drawable resource to use as the small-icon. The name should not include the extension.
 `title` | `string` | | Required. The label to display for the action button.
-`callback` | `string` | | Required. The function to be executed or the event to be emitted when the action button is pressed. The function must be accessible from the global namespace. If you provide `myCallback` then it amounts to calling `window.myCallback`. If you provide `app.myCallback` then there needs to be an object call `app`, with a function called `myCallback` accessible from the global namespace, i.e. `window.app.myCallback`. If there isn't a function with the specified name an event will be emitted with the callback name.
+`callback` | `string` | | Required. The function to be executed when the action button is pressed. The function must be accessible from the global namespace. If you provide `myCallback` then it amounts to calling `window.myCallback`. If you provide `app.myCallback` then there needs to be an object call `app`, with a function called `myCallback` accessible from the global namespace, i.e. `window.app.myCallback`.
 `foreground` | `boolean` | `true` | Optional. Whether or not to bring the app to the foreground when the action button is pressed.
 `inline` | `boolean` | `false` | Optional. Whether or not to provide a quick reply text field to the user when the button is clicked.
 
@@ -765,7 +704,7 @@ service.send(message, { registrationTokens: [ deviceID ] }, function (err, respo
 
 ## Priority in Notifications
 
-You can set a priority parameter for your notifications. This priority value determines where the push notification will be put in the notification shade. Low-priority notifications may be hidden from the user in certain situations, while the user might be interrupted for a higher-priority notification. Add a `priority` field in your notification. -2: minimum, -1: low, 0: default , 1: high, 2: maximum priority.
+You can set a priority parameter for your notifications. Just add a `priority` field in your notification. -2: minimum, -1: low, 0: default , 1: high, 2: maximum priority:
 
 ```javascript
 {
@@ -795,8 +734,6 @@ service.send(message, { registrationTokens: [ deviceID ] }, function (err, respo
 	else 	console.log(response);
 });
 ```
-
-Do not confuse this with the GCM option of setting the [delivery priority of the message](https://developers.google.com/cloud-messaging/concept-options#setting-the-priority-of-a-message). Which is used by GCM to tell the device whether or not it should wake up to deal with the message.
 
 ## Picture Messages
 
@@ -949,67 +886,6 @@ These phones have a particular quirk that when the app is force closed that you 
 - On your Huawei device go to Settings > Protected apps > check "My App" where.
 - On your Xiaomi makes sure your phone has the "Auto-start" property enabled for your app.
 
-### Application force closed
-
-In order to take advantage of this feature you will need to be using cordova-android 6.0.0 or higher. In order to check if the change has been properly applied look at `platforms/android/**/MainActivity.java`. You should see an `onCreate` method that looks like this:
-
-```java
-@Override
-public void onCreate(Bundle savedInstanceState)
-{
-    super.onCreate(savedInstanceState);
-
-    // enable Cordova apps to be started in the background
-    Bundle extras = getIntent().getExtras();
-    if (extras != null && extras.getBoolean("cdvStartInBackground", false)) {
-        moveTaskToBack(true);
-    }
-
-    // Set by <content src="index.html" /> in config.xml
-    loadUrl(launchUrl);
-}
-```
-
-If you don't see the `if` statement that checks for the appearance of `cdvStartInBackground` you will probably need to do:
-
-```
-phonegap platform rm android
-phonegap platform add android
-phonegap build android
-```
-
-This should add the correct code to the `MainActivity` class.
-
-If you add `force-start: 1` to the data payload the application will be restarted in background even if it was force closed.
-
-```javascript
-{
-    "registration_ids": ["my device id"],
-    "data": {
-    	"title": "Force Start",
-    	"message": "This notification should restart the app",
-    	"force-start": 1
-    }
-}
-```
-
-Here is an example using node-gcm that sends the above JSON:
-
-```javascript
-var gcm = require('node-gcm');
-// Replace these with your own values.
-var apiKey = "replace with API key";
-var deviceID = "my device id";
-var service = new gcm.Sender(apiKey);
-var message = new gcm.Message();
-message.addData('title', 'Force Start');
-message.addData('message', 'This notification should restart the app');
-message.addData('force-start', 1);
-service.send(message, { registrationTokens: [ deviceID ] }, function (err, response) {
-	if(err) console.error(err);
-	else 	console.log(response);
-});
-```
 
 ## Visibility of Notifications
 
@@ -1079,40 +955,6 @@ service.send(message, { registrationTokens: [ deviceID ] }, function (err, respo
 });
 ```
 
-## Support for Twilio Notify
-
-This plugin seamlessly supports payloads generated by Twilio Notify on Android. Specifically the parameters passed in to the Twilio REST API are available in the message payload passed to your app as follows:
-
-- `Title` --> `data.title`
-- `Body` --> `data.message`
-- `Sound` --> `data.sound`
-
-Here is an example request to Twilio REST API and the corresponding JSON received by your app.
-
-```
-curl 'https://notify.twilio.com/v1/Services/IS1e928b239609199df31d461071fd3d23/Notifications' -X POST \
---data-urlencode 'Identity=Bob' \
---data-urlencode 'Body=Hello Bob! Twilio Notify + Phonegap is awesome!' \
---data-urlencode 'Title=Hello Bob!' \
---data-urlencode 'Sound=chime' \
--u [AccountSID]:[AuthToken]
-```
-
-The JSON received by your app will comply with the standards described in the sections above:
-
-```javascript
-{
-    "registration_ids": ["my device id"],
-    "data": {
-    	"title": "Hello Bob!",
-    	"message": "Hello Bob! Twilio Notify + Phonegap is awesome!",
-    	"sound": "chime"
-    }
-}
-```
-
-Note: "sound" and "soundname" are equivalent and are considered to be the same by the plugin.
-
 # iOS Behaviour
 
 ## Sound
@@ -1145,7 +987,8 @@ If you want the default sound to play upon receipt of push use this payload:
 
 On iOS if you want your `on('notification')` event handler to be called when your app is in the background you will need to do a few things.
 
-First the JSON you send from APNS will need to include `"content-available": 1` to the `aps` object. The `"content-available": 1` property in your push message is a signal to iOS to wake up your app and give it up to 30 seconds of background processing. If do not want this type of behaviour just omit `"content-available": 1` from your push data. As well you *should* set a `notId` property in the root of payload object. This is the parameter you pass to the `finish` method in order to tell the operating system that the processing of the push event is done.
+First the JSON you send from APNS will need to include `"content-available": 1` to the `aps` object. The `"content-available": 1` property in your push message is a signal to iOS to wake up your app and give it up to 30 seconds of background processing. If do not want this type of behaviour just omit `"content-available": 1` from your push data.
+
 
 For instance the following JSON:
 
@@ -1154,14 +997,11 @@ For instance the following JSON:
 	"aps": {
 		"alert": "Test background push",
 		"content-available": 1
-	},
-  "notId": 1 // unique ID you generate
+	}
 }
 ```
 
 will produce a notification in the notification shade and call your `on('notification')` event handler.
-
-**NOTE:** The `on('notification')` event handler will **not** be called if Background App Refresh is disabled on the user's iOS device. (Settings > General > Background App Refresh)
 
 However if you want your `on('notification')` event handler called but no notification to be shown in the shader you would omit the `alert` property and send the following JSON to APNS:
 
@@ -1171,8 +1011,7 @@ However if you want your `on('notification')` event handler called but no notifi
 		"data": "Test silent background push",
 		"moredata": "Do more stuff",
 		"content-available": 1
-	},
-  "notId": 2 // unique ID you generate
+	}
 }
 ```
 
@@ -1200,9 +1039,7 @@ push.on('notification', function(data) {
 	// then call finish to let the OS know we are done
 	push.finish(function() {
 		console.log("processing of push data is finished");
-	}, function() {
-    console.log("something went wrong with push.finish for ID = " + data.additionalData.notId)
-  }, data.additionalData.notId);
+	});
 });
 ```
 
@@ -1291,68 +1128,6 @@ If you are using GCM to send push messages on iOS you will need to send a differ
     	"body": "Scrum: Daily touchbase @ 10am Please be on time so we can cover everything on the agenda.",
         "click-action": "invite"
     }
-}
-```
-
-## GCM and Additional Data
-
-GCM on iOS is a different animal. The way you send data via GCM on Android is like:
-
-```javascript
-{
-    "registration_ids": ["my device id"],
-    "data": {
-    	"title": "My Title",
-    	"message": "My message",
-    	"key1": "data 1",
-    	"key2": "data 2"
-    }
-}
-```
-
-will produce a `notification` event with the following data:
-
-```javascript
-{
-    "title": "My Title",
-    "message": "My message",
-    "additionalData": {
-        "key1": "data 1",
-        "key2": "data 2"
-    }
-}
-```
-
-but in order for the same `notification` event you would need to send your push to GCM iOS in a slight different format:
-
-```javascript
-{
-    "registration_ids": ["my device id"],
-    "notification": {
-        "title": "My Title",
-    	"body": "My message"
-    }
-    "data": {
-    	"key1": "data 1",
-    	"key2": "data 2"
-    }
-}
-```
-
-The `title` and `body` need to be in the `notification` part of the payload in order for the OS to pick them up correctly. Everything else should be in the `data` part of the payload.
-
-## GCM Messages Not Arriving
-
-For some users of the plugin they are unable to get messages sent via GCM to show up on their devices. If you are running into this issue try setting the `priority` of the message to `high` in the payload.
-
-```javascript
-{
-    "registration_ids": ["my device id"],
-    "notification": {
-        "title": "My Title",
-    	"body": "My message"
-    },
-    "priority": "high"
 }
 ```
 

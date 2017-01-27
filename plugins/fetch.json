@@ -82,11 +82,9 @@
     "phonegap-plugin-push": {
         "source": {
             "type": "registry",
-            "id": "phonegap-plugin-push@1.9.2"
+            "id": "phonegap-plugin-push@1.8.1"
         },
         "is_top_level": true,
-        "variables": {
-            "SENDER_ID": "478967274505"
-        }
+        "variables": {}
     }
 }
