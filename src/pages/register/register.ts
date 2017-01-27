@@ -1,5 +1,5 @@
 import { Component , NgZone} from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController , Platform } from 'ionic-angular';
 import { FormGroup , FormBuilder , Validators } from '@angular/forms';
 
 import { RegisterRequest } from '../../models/user';
@@ -50,7 +50,8 @@ export class RegisterPage {
     private _store: StoreUtil,
     private _userAction : UserAction,
     private _zone: NgZone,
-    private _push: Push
+    private _push: Push ,
+    public _platform : Platform
   ) {
     this.EMAIL_REGEXP = "^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$"
     this.registerForm = this._fb.group({
@@ -65,11 +66,15 @@ export class RegisterPage {
     this.registerSuccess = false
     this.submitAttempt = false
     this.tryToAuth = true
+    this._platform.ready().then(() => {
+      // alert('platform ready')
+      this.login()
+    })
   }
 
-  ionViewWillEnter () {
-    this.login()
-  }
+  // ionViewWillEnter () {
+  //   this.login()
+  // }
 
   login(){
     this._storage.getFromStorage('@user:data')
