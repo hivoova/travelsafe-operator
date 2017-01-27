@@ -12,3 +12,4 @@ export const COMPANY = "travelsafe"
 export const ROOM_TOKEN = 'ODQyMGUxM2NkOTYxNThhMDU2MmRiMDUzOTdmYzA1ZGU'
 export const ROOM = "travelsafe-notification"
 export const ROOM_SERVER = 'AU'
+export const PUSH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MTFiM2JlMy02NTFjLTRhNzQtOGE5MC1jNDFkYzg1Mzc2ZDAifQ.A8BKMXQhraF6887lQ1szoxb7xzmzGU5xoiIOGWZWfWU'

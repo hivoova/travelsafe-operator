@@ -14,7 +14,7 @@ import { StoreUtil } from '../../utilities/store';
 import { ShowMoreJobPage } from '../show-more-job/show-more-job';
 
 import { UserAction } from '../../actions/user';
-import { SOCKET_LINK} from '../../settings'
+import { SOCKET_LINK , PUSH_TOKEN } from '../../settings'
 import {
   Push,
   PushToken
@@ -84,41 +84,28 @@ export class RegisterPage {
             if(res['code'] == 2) {
               this.tryToAuth = true
               this.registerSuccess = true
-              // this._push.register().then((t: PushToken) => {
-              //   return this._push.saveToken(t);
-              // }).then((t: PushToken) => {
-              //   this.socket = io.connect('http://'+SOCKET_LINK);
-              //   this._storage.setToStorage('@device:token' , {token: t.token})
-              //   alert('token:' + t.token)
-              //   this.socket.emit('save-device' , {affiliate: resJson.result.affiliate , token: t.token , server:'AU'})
-              //   this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
-              //   this._loader.loaded()
-              //   this.navCtrl.setRoot(ShowMoreJobPage)
-              // });
-              
-              this._storage.getFromStorage('@device:token') 
-              .then(
-                res => {
-                  // console.log(res)
-                  if(res == null) {
-                    this._push.register().then((t: PushToken) => {
-                      // console.log(t)
-                      this._push.saveToken(t);
-                      this.socket = io.connect('http://'+SOCKET_LINK);
-                      this._storage.setToStorage('@device:token' , {token: t.token})
-                      // alert('token:' + t.token)
-                      this.socket.emit('save-device' , {affiliate: resJson.result.affiliate , token: t.token , server:'AU'})
-                      this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
-                      this._loader.loaded()
+              this._push.register().then((t: PushToken) => {
+                console.log(t)
+                return this._push.saveToken(t);
+                }).then((t: PushToken) => {
+                  this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
+                  this._storage.getFromStorage('@device:token') 
+                  .then(
+                    res => {
+                      if(res == null) {
+                        this.socket = io.connect('http://'+SOCKET_LINK);
+                        this._storage.setToStorage('@device:token' , {token: t.token})
+                        this.socket.emit('save-device' , {affiliate: resJson.result.affiliate , token: t.token , server:'AU' , push_token : PUSH_TOKEN})
+                      }
+                      this.socket = null
+                      this._loader.loaded()  
                       this.navCtrl.setRoot(ShowMoreJobPage)
-                    })
-                  }else{
-                    this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
-                    this._loader.loaded()
-                    this.navCtrl.setRoot(ShowMoreJobPage)
-                  }
-                }
-              )
+                    }
+                  )
+                })
+              .catch(err => {
+                this._alert.basicAlert('Error' , err)
+              })
               // this._store.dispatch(this._userAction.addUserToStorage({key:resJson.result.key , user:resJson.result.user}))
               // this._loader.loaded()
               // this.navCtrl.setRoot(ShowMoreJobPage)
